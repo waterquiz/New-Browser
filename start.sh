@@ -75,6 +75,22 @@ x11vnc -display "${DISPLAY}" -forever -shared -bg \
     -speeds modem,4,2 -tightfilexfer off \
     -o /var/log/x11vnc.log || true
 
+# Confirm x11vnc is actually listening before we let websockify proxy to it.
+echo "==> Waiting for x11vnc on port ${VNC_PORT}..."
+VNC_READY=0
+for i in $(seq 1 30); do
+    if python3 -c "import socket,sys; s=socket.socket(); s.settimeout(1); sys.exit(0 if s.connect_ex(('127.0.0.1',${VNC_PORT}))==0 else 1)" 2>/dev/null; then
+        VNC_READY=1
+        echo "==> x11vnc is listening (port ${VNC_PORT})"
+        break
+    fi
+    sleep 0.5
+done
+if [ "${VNC_READY}" -ne 1 ]; then
+    echo "==> WARNING: x11vnc not listening. Last 20 lines of its log:"
+    tail -n 20 /var/log/x11vnc.log 2>/dev/null || true
+fi
+
 # --- Desktop session ---
 export XDG_SESSION_TYPE=x11
 export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/dbus/system_bus_socket"

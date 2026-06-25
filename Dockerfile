@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         autocutsel \
         xclip \
         xsel \
+        python3 \
         sudo \
     && rm -rf /var/lib/apt/lists/*
 
@@ -36,7 +37,7 @@ RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
 
 EXPOSE 6080
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -fsS "http://127.0.0.1:${PORT:-6080}/" || exit 1
 
 CMD ["/start.sh"]
