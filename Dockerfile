@@ -20,6 +20,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         fonts-liberation \
         fonts-dejavu-core \
         chromium \
+        autocutsel \
+        xclip \
+        xsel \
         sudo \
     && rm -rf /var/lib/apt/lists/*
 

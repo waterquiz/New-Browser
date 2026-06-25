@@ -27,6 +27,13 @@ fi
 mkdir -p /run/dbus
 service dbus start 2>/dev/null || dbus-daemon --system --fork 2>/dev/null || true
 
+# --- Clipboard sync: keep PRIMARY/CLIPBOARD selections in sync so that
+#     text copied on the VNC client side and the desktop side stays mirrored.
+#     autoselection = copy on mouse-select; autocut = sync CLIPBOARD <-> PRIMARY ---
+autocutsel -fork
+autocutsel -selection PRIMARY -fork
+autocutsel -selection CLIPBOARD -fork
+
 # --- Virtual framebuffer ---
 Xvfb "${DISPLAY}" -screen 0 "${RESOLUTION}" -ac +extension RANDR +extension GLX \
     > /var/log/xvfb.log 2>&1 &
